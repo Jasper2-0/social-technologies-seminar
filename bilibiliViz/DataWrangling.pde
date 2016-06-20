@@ -20,7 +20,7 @@ Table parseBilibiliXML(String filename) {
     String userID       = dataList[6];
     int databaseRowID   = parseInt(dataList[7]);
     int intentionality  = 0;
-    int commentType     = -1;
+    String commentType     = "none";
 
     TableRow newRow = t.addRow();     
     newRow.setString("comment", comment);
@@ -33,7 +33,7 @@ Table parseBilibiliXML(String filename) {
     newRow.setString("userID", userID);
     newRow.setInt("databaseRowID", databaseRowID);
     newRow.setInt("intentionality", intentionality);
-    newRow.setInt("commentType", commentType);
+    newRow.setString("commentType", commentType);
   }
 
   return t;
@@ -52,7 +52,7 @@ Table parseBiliBiliCSV(String filename) {
   t.setColumnType("userID",Table.STRING);
   t.setColumnType("databaseRowID",Table.INT);
   t.setColumnType("intentionality",Table.INT);
-  t.setColumnType("commentType",Table.INT);
+  t.setColumnType("commentType",Table.STRING);
  
   return t;
 }

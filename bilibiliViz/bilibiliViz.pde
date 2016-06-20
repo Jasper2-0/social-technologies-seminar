@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 String commentFilename = "7747740.xml";
 
-String commentCSVFilename = "test1.csv";
+String commentCSVFilename = "test_test_test.csv";
 
 PFont chineseFont;
 PFont westernFont;
@@ -59,9 +59,13 @@ void setup() {
 
   comments = parseBiliBiliCSV(commentCSVFilename);
 
+  /*
+  * All the comments are sorted by appeartime.
+  */
+
   comments.setColumnType("appearTime", Table.FLOAT); // otherwise we get an alphabetical sort, we want a _numerical_ sort.
   comments.sort("appearTime");
-
+  
   maxTimeStamp = comments.getIntList("timeStamp").max();
   minTimeStamp = comments.getIntList("timeStamp").min();
 
@@ -115,7 +119,7 @@ void draw() {
 
     if (i == commentIndex) {
       fill(255, 0, 0);
-      ellipseSize = ellipseSize * 2.0;
+      ellipseSize = ellipseSize * 1.0;
     } else {
       fill(255);
     }
@@ -139,6 +143,10 @@ void draw() {
   text(cc.getString("comment"), 0, 0);
   textFont(westernFont);
   text("intentionality: "+cc.getInt("intentionality"), 0, 20);
+  text("commentMode: " + cc.getInt("commentMode"),0,40);
+  text("commentType: " + cc.getString("commentType"),0,60);
+  text("timeStamp: " + cc.getInt("timeStamp"),0,80);
+  text("appearTime: " + cc.getFloat("appearTime"),0,100);
 
   popMatrix();
 
@@ -162,8 +170,12 @@ void keyPressed() {
 
   if (key == 's') {
     println("save csv");
-    saveTable(comments, "comments-"+timestamp()+".csv");
+    saveTable(comments, "data/comments-"+timestamp()+".csv");
   }
+  /*
+  * this is for setting the intentionality level
+  */
+  
   if (key == '1') {
     setIntentionality(commentIndex, 1);
   }
@@ -182,10 +194,18 @@ void keyPressed() {
   if (key == '0') {
     setIntentionality(commentIndex, 0);
   }
+  
+  if (key == 'e') {
+    setCommentType(commentIndex, "emotion");
+  }  
 }
 
 void setIntentionality(int index, int level) {
   comments.setInt(index, "intentionality", level);
+}
+
+void setCommentType(int index, String commentType) {
+  comments.setString(index,"commentType",commentType);
 }
 
 String timestamp() {
