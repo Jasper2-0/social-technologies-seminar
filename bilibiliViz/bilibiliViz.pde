@@ -1,5 +1,7 @@
 import java.util.Date;
+import java.util.Calendar;
 import java.sql.Timestamp;
+
 
 
 String commentFilename = "7747740.xml";
@@ -73,9 +75,6 @@ void setup() {
   println(maxAppear);
 
   println(getUniqueUserCount(comments));
-
-
-
 
   firstComment = new Date(minTimeStamp*1000);
   lastComment = new Date(maxTimeStamp*1000);
@@ -191,7 +190,7 @@ void keyPressed() {
       newRow.setInt("commentType",c.commentType);
     }
     
-    saveTable(t,"test.csv");
+    saveTable(t,"test-"+timestamp()+".csv");
 
   }
   if (key == '1') {
@@ -209,4 +208,9 @@ void keyPressed() {
   if (key == '5') {
     println("intentionality order: 5");
   }
+}
+
+String timestamp() {
+  Calendar now = Calendar.getInstance();
+  return String.format("%1$ty%1$tm%1$td_%1$tH%1$tM%1$tS", now);
 }
