@@ -2,8 +2,6 @@ import java.util.Date;
 import java.util.Calendar;
 import java.sql.Timestamp;
 
-
-
 String commentFilename = "7747740.xml";
 
 PFont chineseFont;
@@ -21,9 +19,7 @@ PFont westernFont;
  Arg7: database rowID
 */
 
-XML xml;
-
-ArrayList<Comment> comments;
+Table comments;
 
 int minTimeStamp;
 int maxTimeStamp;
@@ -59,12 +55,13 @@ void setup() {
 
   comments = parseBilibiliXML(commentFilename);
 
-  maxTimeStamp = maxTimeStamp(comments);
-  minTimeStamp = minTimeStamp(comments);
-
-  minAppear = minAppear(comments);
-  maxAppear = maxAppear(comments);
-
+  maxTimeStamp = comments.getIntList("timeStamp").max();
+  minTimeStamp = comments.getIntList("timeStamp").min();
+  
+  minAppear = comments.getFloatList("appearTime").min();
+  maxAppear = comments.getFloatList("appearTime").max();
+  
+ 
   minCommentLength = minCommentLength(comments);
   maxCommentLength = maxCommentLength(comments);
 
@@ -74,7 +71,7 @@ void setup() {
   println(minAppear);
   println(maxAppear);
 
-  println(getUniqueUserCount(comments));
+  println(comments.getUnique("userID").length);
 
   firstComment = new Date(minTimeStamp*1000);
   lastComment = new Date(maxTimeStamp*1000);
@@ -99,13 +96,13 @@ void draw() {
   pushMatrix();
   translate(0, height/2.0);
 
-  for (int i = 0; i< comments.size(); i++) {
-    Comment c = comments.get(i);
+  for (int i = 0; i< comments.getRowCount(); i++) {
+    TableRow tr = comments.getRow(i);
 
-    float xPos = map(c.appearTime, 0, maxAppear, 0+marginLeft, xRange-marginRight);
-    float yPos = map(c.timeStamp, minTimeStamp, maxTimeStamp, 0, yRange);
+    float xPos = map(tr.getFloat("appearTime"), 0, maxAppear, 0+marginLeft, xRange-marginRight);
+    float yPos = map(tr.getInt("timeStamp"), minTimeStamp, maxTimeStamp, 0, yRange);
 
-    float ellipseSize = map(c.c.length(), minCommentLength, maxCommentLength, minEllipseSize,maxEllipseSize);
+    float ellipseSize = map(tr.getString("comment").length(), minCommentLength, maxCommentLength, minEllipseSize,maxEllipseSize);
 
     noStroke();
 
@@ -121,20 +118,21 @@ void draw() {
   popMatrix();
   pushMatrix();
   translate(5, 15);
-  text("number of Comments: "+comments.size(), 0, 0);
+  text("number of Comments: "+comments.getRowCount(), 0, 0);
   popMatrix();
 
-  text("comment timestamp", marginLeft, 200);
-  text("time in video", 900, 550);
+ text("comment timestamp", marginLeft, 200);
+ text("time in video", 900, 550);
 
-  Comment cc = comments.get(commentIndex);
+  TableRow cc = comments.getRow(commentIndex);
 
   pushMatrix();
   translate(marginLeft, height*0.75);
   textFont(chineseFont);
-  text(cc.c, 0, 0);
+  text(cc.getString("comment"), 0, 0);
   textFont(westernFont);
-  text("intentionality: "+cc.intentionality, 0, 20);
+  text("intentionality: "+cc.getInt("intentionality"), 0, 20);
+  
   popMatrix();
   
   float indicatorX = map(mouseX,0+marginLeft,xRange-marginRight,0,maxAppear);
@@ -146,8 +144,6 @@ void draw() {
   
 }
 
-
-
 void keyPressed() {
   if (key == CODED) {
     if (keyCode == LEFT) {
@@ -157,41 +153,10 @@ void keyPressed() {
       commentIndex = commentIndex + 1;
     }
   }
+  
   if (key == 's') {
     println("save csv");
-
-    Table t = new Table();
-
-    t.addColumn("comment");
-    t.addColumn("appearTime");
-    t.addColumn("commentMode");
-    t.addColumn("fontColor");
-    t.addColumn("fontSize");
-    t.addColumn("timeStamp");
-    t.addColumn("commentPool");
-    t.addColumn("userID");
-    t.addColumn("databaseRowID");
-    t.addColumn("intentionality");
-    t.addColumn("commentType");
-
-    for(Comment c:comments) {
-      TableRow newRow = t.addRow();
-      
-      newRow.setString("comment",c.c);
-      newRow.setFloat("appearTime",c.appearTime);
-      newRow.setInt("commentMode",c.commentMode);
-      newRow.setInt("fontColor",c.fontColor);
-      newRow.setInt("fontSize",c.fontSize);
-      newRow.setInt("timeStamp",c.timeStamp);
-      newRow.setInt("commentPool",c.commentPool);
-      newRow.setString("userID",c.userID);
-      newRow.setInt("databaseRowID",c.databaseRowID);
-      newRow.setInt("intentionality",c.intentionality);
-      newRow.setInt("commentType",c.commentType);
-    }
-    
-    saveTable(t,"test-"+timestamp()+".csv");
-
+    saveTable(comments, "comments-"+timestamp()+".csv");
   }
   if (key == '1') {
     println("intentionality order: 1");

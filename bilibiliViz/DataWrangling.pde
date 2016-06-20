@@ -1,8 +1,9 @@
-ArrayList<Comment> parseBilibiliXML(String filename) {
+Table parseBilibiliXML(String filename) {
 
-  xml = loadXML(filename);
+  XML xml = loadXML(filename);
   XML[] d = xml.getChildren("d");
-  ArrayList<Comment> c = new ArrayList<Comment>();
+
+  Table t = createCommentTable();
 
   for (int i = 0; i < d.length; i++) {
     String data = d[i].getString("p");
@@ -10,104 +11,75 @@ ArrayList<Comment> parseBilibiliXML(String filename) {
 
     String[] dataList = split(data, ",");
 
-    Comment cc = new Comment();
+    float appearTime    = parseFloat(dataList[0]);
+    int commentMode     = parseInt(dataList[1]);
+    int fontSize        = parseInt(dataList[2]);
+    int fontColor       = parseInt(dataList[3]);
+    int timeStamp       = parseInt(dataList[4]);
+    int commentPool     = parseInt(dataList[5]);
+    String userID       = dataList[6];
+    int databaseRowID   = parseInt(dataList[7]);
+    int intentionality  = 0;
+    int commentType     = -1;
 
-    cc.c = comment;
-    cc.appearTime = parseFloat(dataList[0]);
-    cc.commentMode = parseInt(dataList[1]);
-    cc.fontSize = parseInt(dataList[2]);
-    cc.fontColor = parseInt(dataList[3]);
-    cc.timeStamp = parseInt(dataList[4]);
-    cc.commentPool = parseInt(dataList[5]);
-    cc.userID = dataList[6];
-    cc.databaseRowID = parseInt(dataList[7]);
-
-    c.add(cc);
+    TableRow newRow = t.addRow();     
+    newRow.setString("comment", comment);
+    newRow.setFloat("appearTime", appearTime);
+    newRow.setInt("commentMode", commentMode);
+    newRow.setInt("fontColor", fontColor);
+    newRow.setInt("fontSize", fontSize);
+    newRow.setInt("timeStamp", timeStamp);
+    newRow.setInt("commentPool", commentPool);
+    newRow.setString("userID", userID);
+    newRow.setInt("databaseRowID", databaseRowID);
+    newRow.setInt("intentionality", intentionality);
+    newRow.setInt("commentType", commentType);
   }
-  return c;
+
+  return t;
 }
 
-int maxCommentLength(ArrayList<Comment> cc) {
+Table createCommentTable() {
+  Table t = new Table();
+
+  t.addColumn("comment");
+  t.addColumn("appearTime");
+  t.addColumn("commentMode");
+  t.addColumn("fontColor");
+  t.addColumn("fontSize");
+  t.addColumn("timeStamp");
+  t.addColumn("commentPool");
+  t.addColumn("userID");
+  t.addColumn("databaseRowID");
+  t.addColumn("intentionality");
+  t.addColumn("commentType");
+
+  return t;
+}
+
+int maxCommentLength(Table t) {
   int commentLength = 0;
-  
-  for(Comment c : cc) {
-    if (c.c.length() > commentLength ) {
-      commentLength = c.c.length();      
+
+  for (int i = 0; i<t.getRowCount(); i++) {
+    TableRow tr = t.getRow(i);
+    String comment = tr.getString("comment");
+    if (comment.length() > commentLength) {
+      commentLength = comment.length();
     }
-  }
+  }  
   return commentLength;
 }
 
-int minCommentLength(ArrayList<Comment> cc) {
+int minCommentLength(Table t) {
   int commentLength = 2147483647;
-  
-  for (Comment c : cc) {
-    if(c.c.length() < commentLength) {
-      commentLength = c.c.length();
+  for (int i = 0; i<t.getRowCount(); i++) {
+
+    TableRow tr = t.getRow(i);
+    String comment = tr.getString("comment");
+
+    if (comment.length() < commentLength) {
+      commentLength = comment.length();
     }
   }
-  
   return commentLength;
-  
-}
-
-int maxTimeStamp(ArrayList<Comment> cc) {
-
-  int maxTimeStamp = 0;
-
-  for (Comment c : cc) {
-    if (c.timeStamp > maxTimeStamp) {
-      maxTimeStamp = c.timeStamp;
-    }
-  }
-  return maxTimeStamp;
-}
-
-int minTimeStamp(ArrayList<Comment> cc) {
-
-  int minTimeStamp = 2147483647;
-  for (Comment c : cc) {
-    if (c.timeStamp < minTimeStamp) {
-      minTimeStamp = c.timeStamp;
-    }
-  }
-  return minTimeStamp;
-}
-
-float minAppear(ArrayList<Comment> cc) {
-  float minAppear = 7200.0;
-
-  for (Comment c : cc) {
-    if (c.appearTime < minAppear) {
-      minAppear = c.appearTime;
-    }
-  }
-  return minAppear;
-}
-
-float maxAppear(ArrayList<Comment> cc) {
-  float maxAppear = 0;
-
-  for (Comment c : cc) { 
-    if (c.appearTime > maxAppear) {
-      maxAppear = c.appearTime;
-    }
-  }
-  return maxAppear;
-}
-
-ArrayList<String> uniqueUsers(ArrayList<Comment> cc) {
-  ArrayList<String> users = new ArrayList();
-  for (Comment c : cc) {
-    String uid = c.userID;     
-    if (users.contains(uid)) {
-    } else {
-      users.add(uid);
-    }
-  }
-  return users;
-}
-
-int getUniqueUserCount(ArrayList<Comment> cc) {
-  return uniqueUsers(comments).size();
 }
