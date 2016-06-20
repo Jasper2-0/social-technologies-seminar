@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 
 
-String commentFilename = "7747740.xml";
+String commentFilename = "5998813.xml";
 
 PFont chineseFont;
 PFont westernFont;
@@ -19,7 +19,7 @@ PFont westernFont;
  Arg5: Comment pool
  Arg6: sender user id
  Arg7: database rowID
-*/
+ */
 
 XML xml;
 
@@ -84,7 +84,7 @@ void setup() {
 
   println(minTimeStamp);
   println(maxTimeStamp);
-  
+
   println(minCommentLength);
   println(maxCommentLength);
 }
@@ -105,15 +105,22 @@ void draw() {
     float xPos = map(c.appearTime, 0, maxAppear, 0+marginLeft, xRange-marginRight);
     float yPos = map(c.timeStamp, minTimeStamp, maxTimeStamp, 0, yRange);
 
-    float ellipseSize = map(c.c.length(), minCommentLength, maxCommentLength, minEllipseSize,maxEllipseSize);
+    float ellipseSize = map(c.c.length(), minCommentLength, maxCommentLength, minEllipseSize, maxEllipseSize);
 
     noStroke();
 
     if (i == commentIndex) {
-      fill(255, 0, 0);
+      fill(255, 0, 0); 
       ellipseSize = ellipseSize * 2.0;
     } else {
-      fill(255);
+      //fill(255); - color mode
+      if (c.commentMode == 5) {
+        fill(3, 215, 255);
+      } else if (c.commentMode == 4) {
+        fill(255, 173, 213);
+      } else {
+        fill(255, 255, 116);
+      }
     }
     ellipse(xPos, 150+yPos, ellipseSize, ellipseSize);
   }
@@ -121,6 +128,7 @@ void draw() {
   popMatrix();
   pushMatrix();
   translate(5, 15);
+  fill(255);
   text("number of Comments: "+comments.size(), 0, 0);
   popMatrix();
 
@@ -136,14 +144,13 @@ void draw() {
   textFont(westernFont);
   text("intentionality: "+cc.intentionality, 0, 20);
   popMatrix();
-  
-  float indicatorX = map(mouseX,0+marginLeft,xRange-marginRight,0,maxAppear);
-  
-  if(mouseX > 0+marginLeft-1 && mouseX < xRange-marginRight) {
+
+  float indicatorX = map(mouseX, 0+marginLeft, xRange-marginRight, 0, maxAppear);
+
+  if (mouseX > 0+marginLeft-1 && mouseX < xRange-marginRight) {
     stroke(255);
-    line(mouseX,height/2-150,mouseX,height/2+150);
+    line(mouseX, height/2-150, mouseX, height/2+150);
   }
-  
 }
 
 
@@ -174,22 +181,21 @@ void keyPressed() {
     t.addColumn("intentionality");
     t.addColumn("commentType");
 
-    for(Comment c:comments) {
+    for (Comment c : comments) {
       TableRow newRow = t.addRow();
-      
-      newRow.setString("comment",c.c);
-      newRow.setFloat("appearTime",c.appearTime);
-      newRow.setInt("commentMode",c.commentMode);
-      newRow.setInt("fontColor",c.fontColor);
-      newRow.setInt("fontSize",c.fontSize);
-      newRow.setInt("timeStamp",c.timeStamp);
-      newRow.setInt("commentPool",c.commentPool);
-      newRow.setString("userID",c.userID);
-      newRow.setInt("databaseRowID",c.databaseRowID);
-      newRow.setInt("intentionality",c.intentionality);
-      newRow.setInt("commentType",c.commentType);
-    }
-    
+
+      newRow.setString("comment", c.c);
+      newRow.setFloat("appearTime", c.appearTime);
+      newRow.setInt("commentMode", c.commentMode);
+      newRow.setInt("fontColor", c.fontColor);
+      newRow.setInt("fontSize", c.fontSize);
+      newRow.setInt("timeStamp", c.timeStamp);
+      newRow.setInt("commentPool", c.commentPool);
+      newRow.setString("userID", c.userID);
+      newRow.setInt("databaseRowID", c.databaseRowID);
+      newRow.setInt("intentionality", c.intentionality);
+      newRow.setInt("commentType", c.commentType);
+    }    
     saveTable(t,"test-"+timestamp()+".csv");
 
   }
