@@ -39,6 +39,24 @@ Table parseBilibiliXML(String filename) {
   return t;
 }
 
+Table parseBiliBiliCSV(String filename) {
+  Table t = loadTable(filename,"header");
+  
+  t.setColumnType("comment",Table.STRING);
+  t.setColumnType("appearTime",Table.FLOAT);
+  t.setColumnType("commentMode",Table.INT);
+  t.setColumnType("fontColor",Table.INT);
+  t.setColumnType("fontSize",Table.INT);
+  t.setColumnType("timeStamp",Table.INT);
+  t.setColumnType("commentPool",Table.INT);
+  t.setColumnType("userID",Table.STRING);
+  t.setColumnType("databaseRowID",Table.INT);
+  t.setColumnType("intentionality",Table.INT);
+  t.setColumnType("commentType",Table.INT);
+ 
+  return t;
+}
+
 Table createCommentTable() {
   Table t = new Table();
 

@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 
 String commentFilename = "7747740.xml";
 
+String commentCSVFilename = "test1.csv";
+
 PFont chineseFont;
 PFont westernFont;
 
@@ -17,7 +19,7 @@ PFont westernFont;
  Arg5: Comment pool
  Arg6: sender user id
  Arg7: database rowID
-*/
+ */
 
 Table comments;
 
@@ -53,15 +55,20 @@ void setup() {
   chineseFont = createFont("草泥马体", 32);
   westernFont = createFont("Helvetica", 12);
 
-  comments = parseBilibiliXML(commentFilename);
+  //comments = parseBilibiliXML(commentFilename);
+
+  comments = parseBiliBiliCSV(commentCSVFilename);
+
+  comments.setColumnType("appearTime", Table.FLOAT); // otherwise we get an alphabetical sort, we want a _numerical_ sort.
+  comments.sort("appearTime");
 
   maxTimeStamp = comments.getIntList("timeStamp").max();
   minTimeStamp = comments.getIntList("timeStamp").min();
-  
+
   minAppear = comments.getFloatList("appearTime").min();
   maxAppear = comments.getFloatList("appearTime").max();
-  
- 
+
+
   minCommentLength = minCommentLength(comments);
   maxCommentLength = maxCommentLength(comments);
 
@@ -81,7 +88,7 @@ void setup() {
 
   println(minTimeStamp);
   println(maxTimeStamp);
-  
+
   println(minCommentLength);
   println(maxCommentLength);
 }
@@ -102,7 +109,7 @@ void draw() {
     float xPos = map(tr.getFloat("appearTime"), 0, maxAppear, 0+marginLeft, xRange-marginRight);
     float yPos = map(tr.getInt("timeStamp"), minTimeStamp, maxTimeStamp, 0, yRange);
 
-    float ellipseSize = map(tr.getString("comment").length(), minCommentLength, maxCommentLength, minEllipseSize,maxEllipseSize);
+    float ellipseSize = map(tr.getString("comment").length(), minCommentLength, maxCommentLength, minEllipseSize, maxEllipseSize);
 
     noStroke();
 
@@ -121,8 +128,8 @@ void draw() {
   text("number of Comments: "+comments.getRowCount(), 0, 0);
   popMatrix();
 
- text("comment timestamp", marginLeft, 200);
- text("time in video", 900, 550);
+  text("comment timestamp", marginLeft, 200);
+  text("time in video", 900, 550);
 
   TableRow cc = comments.getRow(commentIndex);
 
@@ -132,16 +139,15 @@ void draw() {
   text(cc.getString("comment"), 0, 0);
   textFont(westernFont);
   text("intentionality: "+cc.getInt("intentionality"), 0, 20);
-  
+
   popMatrix();
-  
-  float indicatorX = map(mouseX,0+marginLeft,xRange-marginRight,0,maxAppear);
-  
-  if(mouseX > 0+marginLeft-1 && mouseX < xRange-marginRight) {
+
+  float indicatorX = map(mouseX, 0+marginLeft, xRange-marginRight, 0, maxAppear);
+
+  if (mouseX > 0+marginLeft-1 && mouseX < xRange-marginRight) {
     stroke(255);
-    line(mouseX,height/2-150,mouseX,height/2+150);
+    line(mouseX, height/2-150, mouseX, height/2+150);
   }
-  
 }
 
 void keyPressed() {
@@ -153,26 +159,33 @@ void keyPressed() {
       commentIndex = commentIndex + 1;
     }
   }
-  
+
   if (key == 's') {
     println("save csv");
     saveTable(comments, "comments-"+timestamp()+".csv");
   }
   if (key == '1') {
-    println("intentionality order: 1");
+    setIntentionality(commentIndex, 1);
   }
   if (key == '2') {
-    println("intentionality order: 2");
+    setIntentionality(commentIndex, 2);
   }
   if (key == '3') {
-    println("intentionality order: 3");
+    setIntentionality(commentIndex, 3);
   }
   if (key == '4') {
-    println("intentionality order: 4");
+    setIntentionality(commentIndex, 4);
   }
   if (key == '5') {
-    println("intentionality order: 5");
+    setIntentionality(commentIndex, 5);
   }
+  if (key == '0') {
+    setIntentionality(commentIndex, 0);
+  }
+}
+
+void setIntentionality(int index, int level) {
+  comments.setInt(index, "intentionality", level);
 }
 
 String timestamp() {
