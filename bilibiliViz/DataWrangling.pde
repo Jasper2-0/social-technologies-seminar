@@ -15,7 +15,7 @@ Table parseBilibiliXML(String filename) {
     int commentMode     = parseInt(dataList[1]);
     int fontSize        = parseInt(dataList[2]);
     int fontColor       = parseInt(dataList[3]);
-    int timeStamp       = parseInt(dataList[4]);
+    long timeStamp       = Long.parseLong(dataList[4]);
     int commentPool     = parseInt(dataList[5]);
     String userID       = dataList[6];
     int databaseRowID   = parseInt(dataList[7]);
@@ -28,7 +28,7 @@ Table parseBilibiliXML(String filename) {
     newRow.setInt("commentMode", commentMode);
     newRow.setInt("fontColor", fontColor);
     newRow.setInt("fontSize", fontSize);
-    newRow.setInt("timeStamp", timeStamp);
+    newRow.setLong("timeStamp", timeStamp);
     newRow.setInt("commentPool", commentPool);
     newRow.setString("userID", userID);
     newRow.setInt("databaseRowID", databaseRowID);
