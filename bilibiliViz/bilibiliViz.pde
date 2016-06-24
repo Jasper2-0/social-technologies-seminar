@@ -2,9 +2,9 @@ import java.util.Date;
 import java.util.Calendar;
 import java.sql.Timestamp;
 
-String commentFilename = "7747740.xml";
+String commentFilename = "7682393.xml";
 
-String commentCSVFilename = "test_test_test.csv";
+String commentCSVFilename = "test1.csv";
 
 PFont chineseFont;
 PFont westernFont;
@@ -35,8 +35,8 @@ float maxAppear;
 float marginLeft = 50;
 float marginRight = 50;
 
-float minEllipseSize = 1;
-float maxEllipseSize = 20;
+float minEllipseSize = 5;
+float maxEllipseSize = 25;
 
 float ellipseSize;
 
@@ -121,7 +121,17 @@ void draw() {
       fill(255, 0, 0);
       ellipseSize = ellipseSize * 1.0;
     } else {
-      fill(255);
+      //fill(255); - color mode
+      if (tr.getInt("commentMode") == 5) {
+        fill(255, 95, 165);//pink
+      } else if (tr.getInt("commentMode") == 4) {
+        fill(255, 255, 3);//yellow
+      } else {
+        int alpha = (5 - (tr.getInt("commentMode") % 10)) * 50;
+        int colors = 160 + (tr.getInt("commentMode") % 10) * 30; 
+        color c = color(10, colors, 255);//, alpha);
+        fill(c);
+      }
     }
     ellipse(xPos, 150+yPos, ellipseSize, ellipseSize);
   }
@@ -129,6 +139,7 @@ void draw() {
   popMatrix();
   pushMatrix();
   translate(5, 15);
+  fill(255);
   text("number of Comments: "+comments.getRowCount(), 0, 0);
   popMatrix();
 
