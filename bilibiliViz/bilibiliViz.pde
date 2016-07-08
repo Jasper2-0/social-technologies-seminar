@@ -3,8 +3,7 @@ import java.util.Calendar;
 import java.sql.Timestamp;
 
 String commentFilename = "7682393.xml";
-
-String commentCSVFilename = "test1.csv";
+String commentCSVFilename = "test2.csv";
 
 PFont chineseFont;
 PFont westernFont;
@@ -32,7 +31,7 @@ int maxCommentLength;
 float minAppear;
 float maxAppear;
 
-float marginLeft = 150;
+float marginLeft = 110;
 float marginRight = 50;
 
 float minEllipseSize = 5;
@@ -45,11 +44,17 @@ int commentIndex = 0;
 float xRange;
 float yRange;
 
+color pink =   color(255, 95, 165);
+color yellow = color(255, 255, 3);
+color blue =   color(10,160,255);
+color black = color (0,0,0);
+color white = color(255,255,255);
+
 Date firstComment;
 Date lastComment;
 
 void setup() {
-  size(1280, 768);
+  size(1280, 768,P3D);
   pixelDensity(2);
 
   chineseFont = createFont("草泥马体", 32);
@@ -61,7 +66,7 @@ void setup() {
 
   /*
   * All the comments are sorted by appeartime.
-   */
+  */
 
   println(comments.getFloatList("appearTime"));
 
@@ -73,9 +78,6 @@ void setup() {
 
   minAppear = comments.getFloatList("appearTime").min();
   maxAppear = comments.getFloatList("appearTime").max();
-
-
-
 
   minCommentLength = minCommentLength(comments);
   maxCommentLength = maxCommentLength(comments);
@@ -101,15 +103,14 @@ void setup() {
   println(maxCommentLength);
 }
 
-
-void update() {
-}
-
 void draw() {
 
   background(0);
   pushMatrix();
   translate(0, height/2.0);
+  stroke(255);
+  line(marginLeft,150,width-marginRight,150);
+  line(marginLeft,-150,marginLeft,150);
 
   for (int i = 0; i< comments.getRowCount(); i++) {
     TableRow tr = comments.getRow(i);
@@ -137,7 +138,7 @@ void draw() {
         fill(c);
       }
     }
-    stroke(0);
+    //stroke(0);
     ellipse(xPos, 150+yPos, ellipseSize, ellipseSize);
   }
 
@@ -145,7 +146,7 @@ void draw() {
   pushMatrix();
   translate(5, 15);
   fill(255);
-  text("number of Comments: "+comments.getRowCount(), 0, 0);
+  //text("number of Comments: "+comments.getRowCount(), 0, 0);
   popMatrix();
 
   text("comment timestamp", marginLeft, 200);
@@ -193,6 +194,27 @@ void draw() {
     
   }
   textAlign(LEFT,BOTTOM);
+  pushMatrix();
+  translate(1100,650);
+  drawLegend();
+  popMatrix();
+}
+
+void drawLegend() {
+  fill(pink);
+  noStroke();
+  ellipse(5,5,10,10);
+  text("emotion",15,11);
+  
+  fill(yellow);
+  noStroke();
+  ellipse(5,20,10,10);
+  text("attention!",15,26);
+  
+  fill(blue);
+  noStroke();
+  ellipse(5,35,10,10);
+  text("player action / reaction",15,41);
 }
 
 void keyPressed() {
